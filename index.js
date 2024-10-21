@@ -128,12 +128,32 @@ app.post("/add-product", async (req, res) => {
 app.get("/products", async (req, res) => {
   try {
     const products = await Product.find(); // Fetch all products
-    res.status(201).send(products);
+    if (products.length > 0) {
+      res.status(201).send(products);
+    } else {
+      res.send({ message: "No Record Found" });
+    }
   } catch (error) {
     console.error(error);
     res
       .status(500)
       .send({ message: "Something went wrong, please try again." });
+  }
+});
+
+// Delete Product API
+app.delete("/delete-product/:id", async (req, res) => {
+  try {
+    // Find the product by ID and delete it
+    const deletedProduct = await Product.deleteOne({ _id: req.params.id });
+
+    res.status(201).send({
+      message: "Product deleted successfully",
+      product: deletedProduct,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Product not found." });
   }
 });
 
