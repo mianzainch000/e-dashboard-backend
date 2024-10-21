@@ -48,4 +48,35 @@ app.post("/reg", async (req, res) => {
   }
 });
 
+// Create Login API
+
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Check if user exists
+    const user = await reg.findOne({ email });
+    if (!user) {
+      return res.send({ message: "Invalid email or password" });
+    }
+
+    // Compare provided password with the hashed password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).send({ message: "Invalid email or password" });
+    }
+
+    // Remove password from response
+    const userResponse = user.toObject();
+    delete userResponse.password;
+
+    res.status(201).send({ message: "Login successful", user: userResponse });
+  } catch (error) {
+    // Handle any errors
+    res
+      .status(500)
+      .send({ message: "Something went wrong, please try again." });
+  }
+});
+
 app.listen(4000, () => console.log("Server running on port 4000"));
