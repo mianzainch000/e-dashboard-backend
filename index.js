@@ -50,7 +50,9 @@ app.post("/reg", async (req, res) => {
 });
 
 // Create Login API
+
 // Secret key for JWT
+
 const JWT_SECRET = "hahahahahaah";
 app.post("/login", async (req, res) => {
   try {
@@ -86,6 +88,49 @@ app.post("/login", async (req, res) => {
     }
   } catch (error) {
     // Handle any errors
+    res
+      .status(500)
+      .send({ message: "Something went wrong, please try again." });
+  }
+});
+
+//Create Products Api
+const Product = require("./db/product");
+
+app.post("/add-product", async (req, res) => {
+  try {
+    const { name, price, category, company } = req.body;
+
+    // Create a new product
+    let newProduct = new Product({
+      name,
+      price,
+      category,
+      company,
+    });
+
+    // Save the product to the database
+    let result = await newProduct.save();
+
+    res
+      .status(201)
+      .send({ message: "Product added successfully", product: result });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .send({ message: "Something went wrong, please try again." });
+  }
+});
+
+// Get Api Add Product
+
+app.get("/products", async (req, res) => {
+  try {
+    const products = await Product.find(); // Fetch all products
+    res.status(201).send(products);
+  } catch (error) {
+    console.error(error);
     res
       .status(500)
       .send({ message: "Something went wrong, please try again." });
