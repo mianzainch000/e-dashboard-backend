@@ -6,6 +6,7 @@ const app = express();
 const cors = require("cors");
 app.use(express.json());
 app.use(cors());
+const jwt = require("jsonwebtoken");
 
 // Create Signup API
 
@@ -49,7 +50,8 @@ app.post("/reg", async (req, res) => {
 });
 
 // Create Login API
-
+// Secret key for JWT
+const JWT_SECRET = "hahahahahaah";
 app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -70,7 +72,18 @@ app.post("/login", async (req, res) => {
     const userResponse = user.toObject();
     delete userResponse.password;
 
-    res.status(201).send({ message: "Login successful", user: userResponse });
+    if (user) {
+      jwt.sign({ user }, JWT_SECRET, { expiresIn: "1h" }, (err, token) => {
+        if (err) {
+          res.send({ message: "Something went wrong, please try again." });
+        }
+        res.status(201).send({
+          message: "Login successful",
+          user: userResponse,
+          token: token,
+        });
+      });
+    }
   } catch (error) {
     // Handle any errors
     res
