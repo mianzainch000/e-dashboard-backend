@@ -176,4 +176,30 @@ app.get("/eiditProduct/:id", async (req, res) => {
   }
 });
 
+// Update Product API
+app.put("/update-product/:id", async (req, res) => {
+  try {
+    const { name, price, category, company } = req.body;
+    const updatedProduct = await Product.findByIdAndUpdate(
+      req.params.id,
+      { name, price, category, company }
+      // { new: true } // Return the updated product
+    );
+
+    if (!updatedProduct) {
+      return res.status(404).send({ message: "Product not found." });
+    }
+
+    res.status(201).send({
+      message: "Product updated successfully",
+      product: updatedProduct,
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .send({ message: "Something went wrong, please try again." });
+  }
+});
+
 app.listen(4000, () => console.log("Server running on port 4000"));
