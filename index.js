@@ -157,4 +157,23 @@ app.delete("/delete-product/:id", async (req, res) => {
   }
 });
 
+// Get Single Product API
+app.get("/eiditProduct/:id", async (req, res) => {
+  try {
+    // Find the product by ID
+    const product = await Product.findById(req.params.id);
+
+    if (product) {
+      res.status(201).send(product); // Send the found product
+    } else {
+      res.status(404).send({ message: "Product not found." }); // Not found
+    }
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .send({ message: "Something went wrong, please try again." });
+  }
+});
+
 app.listen(4000, () => console.log("Server running on port 4000"));
