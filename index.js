@@ -202,4 +202,31 @@ app.put("/update-product/:id", async (req, res) => {
   }
 });
 
+// Search API
+app.get("/searchProduct/:key", async (req, res) => {
+  try {
+    // Find products matching the search key
+    const searchProduct = await Product.find({
+      $or: [
+        {
+          name: { $regex: req.params.key, $options: "i" }, // Add 'i' for case-insensitive search
+        },
+      ],
+    });
+
+    if (searchProduct.length > 0) {
+      res.status(200).send(searchProduct); // Return products found
+    } else {
+      res
+        .status(404)
+        .send({ message: "No products found matching your search." }); // No products found
+    }
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .send({ message: "Something went wrong, please try again." });
+  }
+});
+
 app.listen(4000, () => console.log("Server running on port 4000"));
